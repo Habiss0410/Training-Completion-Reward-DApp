@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Training Completion Reward DApp</title>
+
+    <link rel="stylesheet" href="./src/styles.css">
+
+    <!-- Thứ tự tải quan trọng: ethers -> contract-info -> script -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js" defer></script>
+    <script src="./contract-info.js" defer></script>
+    <script src="./src/script.js" defer></script>
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- Header -->
+        <header>
+            <div>
+                <h1>🎓 Training Reward DApp</h1>
+                <p class="subtitle">
+                    Thưởng 0,015 ETH cho nhân viên hoàn thành khóa đào tạo nội bộ
+                </p>
+            </div>
+            <span class="badge">Solidity · Web3 Lab</span>
+        </header>
+
+        <!-- Warning banner -->
+        <div id="warning" class="warning hidden"></div>
+
+        <!-- Wallet Bar -->
+        <div class="wallet-bar">
+            <button id="connectBtn" class="primary">Kết nối MetaMask</button>
+            <span id="rolePill" class="pill pill-wait">Chưa kết nối</span>
+            <span id="networkPill" class="pill pill-gray">Chưa có mạng</span>
+            <span class="account-box">
+                Ví: <strong id="account" class="mono">-</strong>
+            </span>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="balance-card">
+                <p>Quỹ thưởng hiện tại</p>
+                <h2><span id="fund">-</span> ETH</h2>
+                <div class="meter"><div id="fundBar" class="meter-bar"></div></div>
+                <p id="fundRounds" class="meter-text">Đủ cho - lượt thưởng</p>
+            </div>
+
+            <div class="stat-card">
+                <p>Mức thưởng / khóa</p>
+                <h3>0.015 ETH</h3>
+            </div>
+
+            <div class="stat-card">
+                <p>Số khóa học</p>
+                <h3 id="courseCount">0</h3>
+            </div>
+
+            <div class="stat-card">
+                <p>Thưởng tôi đã nhận</p>
+                <h3 id="myRewards">0</h3>
+            </div>
+        </div>
+
+        <!-- Courses -->
+        <div class="section-header">
+            <h3>Khóa học và quyền nhận thưởng của tôi</h3>
+        </div>
+        <div id="courses" class="courses">
+            <div class="empty">Hãy kết nối ví để xem khóa học.</div>
+        </div>
+
+        <!-- Manager Panel -->
+        <div id="managerPanel" class="panel hidden">
+            <div class="section-header">
+                <h3>🛠 Khu vực Quản lý</h3>
+                <span class="hint">Chỉ ví quản lý nhìn thấy</span>
+            </div>
+
+            <div class="form-group">
+                <label for="newName">registerTraining() - Tạo khóa học mới</label>
+                <div class="row">
+                    <input id="newName" type="text" placeholder="Tên khóa học mới">
+                    <button id="registerBtn" class="primary lockable">Tạo khóa</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="apvId">approveCompletion() - Xác nhận hoàn thành</label>
+                <div class="row">
+                    <input id="apvId" type="number" min="1" step="1"
+                           placeholder="ID khóa" class="narrow">
+                    <input id="apvAddr" type="text"
+                           placeholder="Địa chỉ ví nhân viên 0x...">
+                    <button id="approveBtn" class="dark lockable">Xác nhận</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="fundAmt">Nạp quỹ thưởng</label>
+                <div class="row">
+                    <input id="fundAmt" type="number" min="0" step="0.001"
+                           placeholder="Số ETH (vd 0.1)">
+                    <button id="fundBtn" class="green lockable">Nạp quỹ</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lookup Panel -->
+        <div id="lookupPanel" class="panel hidden">
+            <div class="section-header">
+                <h3>🔍 Tra cứu hasReceivedReward()</h3>
+            </div>
+            <div class="row">
+                <input id="lkId" type="number" min="1" step="1"
+                       placeholder="ID khóa" class="narrow">
+                <input id="lkAddr" type="text" placeholder="Địa chỉ ví 0x...">
+                <button id="lookupBtn" class="primary lockable">Kiểm tra</button>
+            </div>
+            <div id="lkResult" class="lookup-result"></div>
+        </div>
+
+        <hr>
+
+        <!-- Transaction Status -->
+        <p id="status" class="status info">Sẵn sàng. Hãy kết nối ví MetaMask.</p>
+
+        <!-- Transaction History -->
+        <div class="history-header">
+            <h3>Nhật ký kết quả giao dịch</h3>
+            <span id="logCount">0 sự kiện</span>
+        </div>
+        <div id="history">
+            <div class="empty">Chưa có giao dịch nào.</div>
+        </div>
+
+        <p class="note">
+            Dữ liệu chạy trên mạng Hardhat Local (chain ID 31337).
+            Không dùng ETH thật.
+        </p>
+
+    </div>
+</body>
+</html>
